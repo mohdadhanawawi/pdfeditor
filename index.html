@@ -16,6 +16,27 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // If the app crashes before it renders, show the error instead of a blank page.
+      (function () {
+        function show(msg) {
+          var root = document.getElementById('root');
+          if (!root || root.childElementCount) return;
+          root.innerHTML = '<div style="font:15px/1.5 system-ui,sans-serif;max-width:640px;margin:64px auto;padding:24px;border-radius:12px;background:#fff4f4;color:#7a1512">' +
+            '<h2 style="margin:0 0 8px">PDF Editor could not start</h2>' +
+            '<p style="margin:0 0 12px">Try a hard refresh (Ctrl+Shift+R). If it still fails, send this error to the developer:</p>' +
+            '<pre style="white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;font-size:13px"></pre></div>';
+          root.querySelector('pre').textContent = msg;
+        }
+        window.addEventListener('error', function (e) {
+          show((e.message || 'Script failed to load') + (e.filename ? '\n' + e.filename + ':' + e.lineno : '') + (e.target && e.target.src ? '\n' + e.target.src : ''));
+        }, true);
+        window.addEventListener('unhandledrejection', function (e) { show(String(e.reason && e.reason.stack || e.reason)); });
+        window.addEventListener('load', function () {
+          setTimeout(function () { show('The app did not render (no error was reported).\nBrowser: ' + navigator.userAgent); }, 4000);
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
