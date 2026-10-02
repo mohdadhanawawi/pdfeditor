@@ -5,12 +5,14 @@ import type { PDFDocumentProxy } from '../lib/pdf';
 export type GridPage = { key: string | number; index: number; rotation?: number };
 
 /** Grid of page thumbnails with click-to-select and optional per-card controls / drag reorder. */
-export function PageGrid({ doc, pages, selected, onToggle, controls, onReorder, selectStyle = 'select' }: {
+export function PageGrid({ doc, pages, selected, onToggle, controls, footer, onReorder, selectStyle = 'select' }: {
   doc: PDFDocumentProxy;
   pages: GridPage[];
   selected?: Set<number>;
   onToggle?: (pos: number, e: React.MouseEvent) => void;
   controls?: (pos: number) => ReactNode;
+  /** Always-visible-on-touch controls under the thumbnail (e.g. move buttons, since HTML5 drag doesn't work on phones). */
+  footer?: (pos: number) => ReactNode;
   onReorder?: (from: number, to: number) => void;
   selectStyle?: 'select' | 'remove';
 }) {
@@ -29,6 +31,7 @@ export function PageGrid({ doc, pages, selected, onToggle, controls, onReorder, 
             {controls && <div className="card-tools" onClick={(e) => e.stopPropagation()}>{controls(pos)}</div>}
             <PageThumb doc={doc} index={p.index} rotation={p.rotation} width={130} />
             <div className="page-no">{p.index + 1}</div>
+            {footer && <div className="card-foot" onClick={(e) => e.stopPropagation()}>{footer(pos)}</div>}
             {isSel && <div className="check">{selectStyle === 'remove' ? '✕' : '✓'}</div>}
           </div>
         );

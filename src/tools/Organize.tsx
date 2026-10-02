@@ -31,12 +31,16 @@ function OrganizeView({ pdf, api }: { pdf: LoadedPdf; api: ToolApi }) {
         data: await buildFromPlan(pdf.bytes, pages.map((p) => ({ index: p.index, rotation: p.rotation }))),
       }])}
       sidebar={<>
-        <p className="muted">Drag pages to reorder them. Hover a page to rotate or delete it.</p>
+        <p className="muted">Drag pages (or use the arrows) to reorder them. Use the buttons on each page to rotate or delete it.</p>
         <p><strong>{pages.length}</strong> of {pdf.doc.numPages} pages kept</p>
         <button className="btn btn-ghost btn-block" onClick={() => setPages(initial())}><Icon name="undo" size={18} /> Reset</button>
         <button className="btn btn-ghost btn-block" onClick={() => setPages((p) => [...p].reverse())}>Reverse order</button>
       </>}>
       <PageGrid doc={pdf.doc} pages={pages} onReorder={reorder}
+        footer={(pos) => <>
+          <button title="Move earlier" disabled={pos === 0} onClick={() => reorder(pos, pos - 1)}><Icon name="up" size={14} /></button>
+          <button title="Move later" disabled={pos === pages.length - 1} onClick={() => reorder(pos, pos + 1)}><Icon name="down" size={14} /></button>
+        </>}
         controls={(pos) => <>
           <button title="Rotate left" onClick={() => update(pos, (p) => ({ ...p, rotation: (p.rotation ?? 0) - 90 }))}><Icon name="undo" size={14} /></button>
           <button title="Rotate right" onClick={() => update(pos, (p) => ({ ...p, rotation: (p.rotation ?? 0) + 90 }))}><Icon name="rotate" size={14} /></button>
