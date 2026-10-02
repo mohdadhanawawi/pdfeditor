@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react';
 import { Icon } from './components/Icon';
 import { TOOLS, toolById } from './tools/registry';
+import { usePwa } from './pwa';
 
 const pages: Record<string, ComponentType> = {
   merge: lazy(() => import('./tools/Merge')),
@@ -61,6 +62,46 @@ function Home() {
   );
 }
 
+function InstallButton() {
+  const pwa = usePwa();
+  const [iosOpen, setIosOpen] = useState(false);
+  if (pwa.canInstall) {
+    return <button className="btn btn-primary btn-install" onClick={pwa.install}><Icon name="download" size={16} /> Install app</button>;
+  }
+  if (!pwa.showIosHint) return null;
+  return (
+    <>
+      <button className="btn btn-primary btn-install" onClick={() => setIosOpen(true)}><Icon name="download" size={16} /> Install app</button>
+      {iosOpen && (
+        <div className="modal-backdrop" onPointerDown={(e) => e.target === e.currentTarget && setIosOpen(false)}>
+          <div className="modal">
+            <div className="modal-head">
+              <h3>Install on iPhone / iPad</h3>
+              <button className="icon-btn" onClick={() => setIosOpen(false)}><Icon name="close" size={18} /></button>
+            </div>
+            <ol className="ios-steps">
+              <li>Tap the <strong>Share</strong> button <span className="ios-share" aria-hidden>⬆︎</span> in Safari's toolbar.</li>
+              <li>Scroll down and choose <strong>Add to Home Screen</strong>.</li>
+              <li>Tap <strong>Add</strong>. PDF Editor opens full-screen and works offline.</li>
+            </ol>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function UpdateToast() {
+  const pwa = usePwa();
+  if (!pwa.updateReady) return null;
+  return (
+    <div className="toast update" role="status">
+      A new version is available.
+      <button className="btn btn-primary" onClick={pwa.applyUpdate}>Reload</button>
+    </div>
+  );
+}
+
 export default function App() {
   const route = useRoute();
   const Page = pages[route];
@@ -82,12 +123,14 @@ export default function App() {
           ))}
           <a href="#/" className={!Page ? 'active' : ''}>All tools</a>
         </nav>
+        <InstallButton />
       </header>
       <main className={fullscreen ? 'main main-wide' : 'main'}>
         <Suspense fallback={<div className="center-box"><div className="spinner" /></div>}>
           {Page ? <Page key={route} /> : <Home />}
         </Suspense>
       </main>
+      <UpdateToast />
       {!fullscreen && <footer className="footer">
         <span>© {new Date().getFullYear()} PDF Editor · Files are processed locally and never uploaded.</span>
       </footer>}

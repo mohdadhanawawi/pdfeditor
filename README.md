@@ -21,6 +21,15 @@ An iLovePDF-style web app with every common PDF tool in one place. Everything ru
 
 Text the standard PDF fonts can't encode (e.g. Chinese, Arabic, emoji) is stamped as an image so it still works. Pages with a `/Rotate` entry or a crop box are handled correctly by all stamping tools.
 
+## Install as an app (PWA)
+
+The site is a Progressive Web App. Once opened it is cached by a service worker, so every tool keeps working **offline**.
+
+- **Android / Chrome / Edge:** tap **Install app** in the header (or the browser's install prompt).
+- **iPhone / iPad:** Safari → Share → **Add to Home Screen** (the Install app button shows these steps).
+
+When a new version is deployed, the app shows a "new version available" toast; tapping **Reload** switches to it. The service worker is generated at build time (`src/sw-template.js` + the `pdfeditor-sw` plugin in `vite.config.ts`) with a precache list of every built file.
+
 ## Development
 
 ```bash
