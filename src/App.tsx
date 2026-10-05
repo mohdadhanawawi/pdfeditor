@@ -132,7 +132,12 @@ export default function App() {
       </main>
       <UpdateToast />
       {!fullscreen && <footer className="footer">
-        <span>© {new Date().getFullYear()} PDF Editor · Files are processed locally and never uploaded.</span>
+        <p className="credit">
+          Dibangunkan oleh <strong>Adha</strong> · Dijana dengan{' '}
+          <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude</a> · Diinspirasikan oleh{' '}
+          <a href="https://www.ilovepdf.com" target="_blank" rel="noopener noreferrer">iLovePDF</a>
+        </p>
+        <p>© {new Date().getFullYear()} PDF Editor · Files are processed locally and never uploaded. Not affiliated with iLovePDF.</p>
       </footer>}
     </div>
   );
